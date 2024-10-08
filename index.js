@@ -1,7 +1,9 @@
 function createGameboard() {
-  const boardSize = 3;
   let board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
-  return { boardSize, board };
+
+  const setPlay = (player, cell) => (board[cell] = player);
+
+  return { board, setPlay };
 }
 
 function createPlayer(player) {
@@ -14,13 +16,29 @@ const playerOne = createPlayer("X");
 const playerTwo = createPlayer("O");
 
 const Game = (function () {
+  const boardButtons = document.getElementsByClassName("board__button");
+  const players = [playerOne, playerTwo];
+  let curentPlayer = players[0];
+
   const renderBoard = () => {
-    const boardButtons = document.getElementsByClassName("board__button");
     for (let button of boardButtons) {
       button.textContent = myBoard.board[button.id];
     }
   };
-  return { renderBoard };
+
+  let playsCounter = 0;
+  const updateBoard = () => {
+    for (let button of boardButtons) {
+      button.addEventListener("click", (e) => {
+        myBoard.setPlay(curentPlayer.symbol, button.id);
+        playsCounter += 1;
+        curentPlayer = players[playsCounter % 2];
+        renderBoard();
+      });
+    }
+  };
+
+  return { updateBoard };
 })();
 
-Game.renderBoard();
+Game.updateBoard();
